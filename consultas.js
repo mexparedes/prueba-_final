@@ -42,7 +42,7 @@ let getParticipantes = async () => {
 let getValidacion = async ( email, password ) => {
     try {
         const consulta = {
-            text: "SELECT * FROM skaters WHERE email = $1 AND password = $2",
+            text: "SELECT * FROM skaters WHERE email = $1 AND password = $2;",
             values: [email,password],
         };
         const result = await pool.query(consulta);
@@ -50,7 +50,7 @@ let getValidacion = async ( email, password ) => {
     }catch(e){
         throw e;
     }
-}
+};
 
 let actualizarParticipante = async ( participante ) => {
     try {

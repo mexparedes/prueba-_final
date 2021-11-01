@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const { v4: uuidv4 } = require('uuid');
 const exphbs = require('express-handlebars');
 const expressFileUpload = require('express-fileupload');
 const jwt = require('jsonwebtoken');
@@ -8,7 +9,7 @@ const secretKey = "secret";
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use("/assets", express.static(__dirname + "/assets"));
+app.use("/assets", express.static(__dirname + "/assets"));  //imagen debe quedar con el nombre de la persona, con uuid
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
 //app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
@@ -33,6 +34,24 @@ app.use(
     })
 );
 
+
+const verifyToken = (req, res, next) => {
+    const token =  req.query.token;
+    if (!token){
+        res.status(401);
+        res.send("<h1>No tienes acceso.</h1>");
+    } else {
+        jwt.verify(token, secretKey, (err, usuario) => {
+            if (err) res.send("<h1>No tienes acceso, token incorrecto.</h1>");
+            else {
+                req.usuario = usuario;
+                next();
+            }
+        });
+    }
+};
+
+
 app.get( "/", async (req, res) =>{
     res.render("index");
 });
@@ -55,20 +74,21 @@ app.get( "/login", function (req, res){
 
 app.post( "/autenticacion" , async (req, res) => {  //Autenticando usuario
     let { email, password } = req.body;
-    console.log(email);
-    console.log(password);
+    // console.log(email);
+    // console.log(password);
     try {
         let user = await getValidacion( email, password );
         if(user){
-            //console.log(user);
-
-
-
-
-            
-            res.render("Datos", { layout: "datos"});
-        }else{
-            res.send("<h1> Datos incorrectos ...</h1>")
+            // console.log(user);
+            const token = jwt.sign(
+                {
+                    exp: Math.floor(Date.now() / 1000) + 180,
+                    data: user,
+                },
+                secretKey
+            );
+            // console.log(token);
+            res.json(token); 
         }
     }catch(e){
         console.log(e);
@@ -101,13 +121,15 @@ app.get( "/registro", function (req, res){
 app.post("/registro", async (req, res) => {
     try {
         const { target_file } = req.files;
-        //console.log(target_file);
+        console.log(target_file);
         const { nombre, email, password, anos_experiencia, especialidad} = req.body;
+        //crear nombre de imagen con uuid
+        const nombreFoto = `${nombre}-${uuidv4().substring(0,8)}-${target_file.name}`;
         //Paso para guardar la imagen
-        target_file.mv(`${__dirname}/assets/imgs/${target_file.name}`, (err) => {    //se puede manejar try catch para la subiuda del archivo
+        target_file.mv(`${__dirname}/assets/imgs/${nombreFoto}`, (err) => {    //se puede manejar try catch para la subiuda del archivo
             //res.send("Archivo cargado con éxito");
         });
-        const participante = [email,nombre,password,anos_experiencia,especialidad,target_file.name,false]
+        const participante = [email,nombre,password,anos_experiencia,especialidad,nombreFoto,false]
         //console.log(participante);
         const respuesta = await insertarParticipante(participante);
         console.log(respuesta);
@@ -140,15 +162,23 @@ app.delete("/eliminar/:email", async (req, res) => {
 
 
 
-app.get( "/datos", function (req, res){
-    res.render("Datos", { layout: "datos"});
+app.get( "/datos", verifyToken, function (req, res){
+    const usuario = req.usuario.data;
+    res.render("Datos", { layout: "datos", usuario } );
 })
 
 
-app.get( "/admin", function (req, res){
-    res.render("Admin", { layout: "admin"});
+app.get( "/admin", verifyToken, async function (req, res){
+    try {
+        const participantes = await getParticipantes();
+        console.log(participantes);
+        res.status(200);
+        res.render("Admin", { layout: "admin", participantes });
+    }
+    catch (e) {
+        errorHandler(res, e);
+    }
 })
-
 
 
 app.get("*", (req, res) => {

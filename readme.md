@@ -21,7 +21,10 @@ Fecha: día 14-10-2021
 
 ## Consideraciones ✒️
 
+**Para ingresar a la vista de administrador se debe logear con la cuenta administrador en la vista login.
+**Cuenta Admin:  email: admin@admin.cl  password: admin
+**Las password no se trabajan encriptadas
+**Respecto del manejo del nombre de las fotos, esta se constituye: (nombreparticipante-uuid-nombrearchivo), con un uuid de 6 caracteres.
 
-**El Programa no esta diseñada para manejar duplicidad de fotos, es decir, si se ingresa una nueva
-foto con el mismo nombre, entonces la reemplazará.
+**Handle-bars: lo utilzado es renderizado, parametro en la vista
 
