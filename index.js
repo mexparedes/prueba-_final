@@ -68,7 +68,8 @@ app.get( "/participantes", async (req, res) =>{
 });
 
 app.get( "/login", function (req, res){
-    res.render("Login", { layout: "login"});
+    const nombrePagina = "Iniciar Sesión";
+    res.render("Login", { layout: "login", nombrePagina});
 })
 
 
@@ -115,7 +116,8 @@ app.post("/actualizar", async (req, res) => {
 
 
 app.get( "/registro", function (req, res){
-    res.render("Registro", { layout: "registro"});
+    const nombrePagina = "Registro";
+    res.render("Registro", { layout: "registro", nombrePagina});
 });
 
 app.post("/registro", async (req, res) => {
@@ -169,11 +171,12 @@ app.get( "/datos", verifyToken, function (req, res){
 
 
 app.get( "/admin", verifyToken, async function (req, res){
+    const nombrePagina = "Administración";
     try {
         const participantes = await getParticipantes();
         console.log(participantes);
         res.status(200);
-        res.render("Admin", { layout: "admin", participantes });
+        res.render("Admin", { layout: "admin", participantes, nombrePagina });
     }
     catch (e) {
         errorHandler(res, e);
