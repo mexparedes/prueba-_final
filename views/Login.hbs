@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{nombrePagina}}</title>
+    <title>login</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
@@ -64,35 +64,30 @@ $("#formulario1").submit(async (e) => {
     //console.log(email);
     //console.log(password);
     if (email && password && email === "admin@admin.cl") {
+        axios.post("/autenticacion", payload).then(data => {
+          const token = data.data;
+          console.log(token);
+          alert(`Bienvenido Admin!!! serás dirigido a la vista administrador, Tu token está en SessionStorage`);
+          sessionStorage.setItem('token', JSON.stringify(token));
+          window.location.href = `/admin?token=${token}`;
+        }).catch(response => alert(response.data.error));
+    } 
+  
+    if (email && password && email != "admin@admin.cl") {
     axios.post("/autenticacion", payload).then(data => {
       const token = data.data;
       console.log(token);
-      alert(`Bienvenido Admin!!! serás dirigido a la vista administrador, Tu token está en SessionStorage`);
-      sessionStorage.setItem('token', JSON.stringify(token));
-      window.location.href = `/admin?token=${token}`;
-    }).catch(response => alert(response.data.error));
-  } else if (email && password) {
-    axios.post("/autenticacion", payload).then(data => {
-      const token = data.data;
-      console.log(token);
-      alert(`Autenticado con éxito! serás dirigido a Datos de perfil para actualizar o eliminar tu cuenta, Tu token está en SessionStorage`);
-      sessionStorage.setItem('token', JSON.stringify(token));
-      window.location.href = `/datos?token=${token}`;
-    }).catch(response => alert(response.data.error));
-  } else {
-    alert("Ingrese todo los datos bien");
-
-  }
-
-
-
-
-
-
-
-
-
-
-  });
+      if (token == 'NO EXISTE') {
+        alert("La cuenta no existe, por favor registrese o ingrese corretamente los datos");
+      } else {
+        console.log(token);
+        alert(`Autenticado con éxito! serás dirigido a Datos de perfil para actualizar o eliminar tu cuenta, Tu token está en SessionStorage`);
+        sessionStorage.setItem('token', JSON.stringify(token));
+        window.location.href = `/datos?token=${token}`;
+      };
+  }).catch(response => alert(response.data.error));
+};
+//alert("Ingrese todo los datos bien");
+});
 
 </script>

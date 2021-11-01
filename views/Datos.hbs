@@ -23,46 +23,51 @@
       <div class="form-group row w-50 m-auto">
         <div class="form-group col-12 col-sm-6">
           <label>Email</label>
-          <input id="email" value="{{usuario.email}}" name="email" class="form-control m-auto" required/>
+          <input id="email" value="{{usuario.email}}" name="email" class="form-control m-auto" required />
         </div>
         <div class="form-group col-12 col-sm-6">
           <label>Nombre</label>
-          <input id="name" value="{{usuario.nombre}}" name="nombre" class="form-control m-auto" required/>
+          <input id="name" value="{{usuario.nombre}}" name="nombre" class="form-control m-auto" required />
         </div>
         <div class="form-group col-12 col-sm-6">
           <label>Password</label>
-          <input id="password" value="{{usuario.password}} "type="password" name="password" class="form-control m-auto" required/>
+          <input id="password" value="{{usuario.password}}" type="password" name="password" class="form-control m-auto"
+            required />
         </div>
         <div class="form-group col-12 col-sm-6">
           <label>Repita la password</label>
-          <input id="rePassword" type="password" value="{{usuario.password}}"class="form-control m-auto" name="rePassword" required />
+          <input id="rePassword" type="password" value="{{usuario.password}}" class="form-control m-auto"
+            name="rePassword" required />
         </div>
         <div class="form-group col-12 col-sm-6">
           <label>Años de experiencia</label>
-          <input id="anos_experiencia" value="{{usuario.anos_experiencia}}"class="form-control m-auto" name="anos_experiencia" required />
+          <input id="anos_experiencia" value="{{usuario.anos_experiencia}}" class="form-control m-auto"
+            name="anos_experiencia" required />
         </div>
         <div class="form-group col-12 col-sm-6">
           <label>Especialidad</label>
-          <input id="especialidad" value="{{usuario.especialidad}}"class="form-control m-auto" name="especialidad" required />
+          <input id="especialidad" value="{{usuario.especialidad}}" class="form-control m-auto" name="especialidad"
+            required />
         </div>
       </div>
       <div class="mb-1">
-        <button name="btn1" type="submit" class="btn btn-primary">Actualizar</button>
+        <button value="boton1" name="btn1" type="submit" class="btn btn-primary">Actualizar</button>
       </div>
-      {{!-- <div>
-        <button onclick="eliminar()" class="btn btn-danger">Eliminar cuenta</button>
-      </div> --}}
-    </form>
+      <div>
+        <button value="boton2" class="btn btn-danger mt-2" type="submit" id="btn2">Eliminar cuenta</button>
+      </div>
+    {{!-- </form>
   </div>
   <div>
     <form id="formulario2">
       <div class="form-group col-12 col-sm-6 w-50 m-auto">
         <label>Email</label>
-        <input type="text" id="email_eliminar" value="{{usuario.email}}" name="email"class="form-control m-auto w-50"/>
-        <button class="btn btn-danger mt-2" type="submit" id="btn2">Eliminar cuenta</button>
+        <input type="text" id="email_eliminar" value="{{usuario.email}}" name="email"
+          class="form-control m-auto w-50" />
+        <button value="boton2" class="btn btn-danger mt-2" type="submit" id="btn2">Eliminar cuenta</button>
       </div>
     </form>
-  </div>
+  </div> --}}
 
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -84,69 +89,102 @@
 
 <script>
 
-$("#formulario1").submit(async (e) => {
+
+
+  //$("#formulario1").submit(async (e) => {
+  $(document).ready(function () {
+    $("#formulario1 button").click( async function (e) {
+
+      e.preventDefault();
+
+      if ($(this).attr("value") == "boton1") {
+        let email = $("#email").val();
+        let nombre = $("#name").val();
+        let password = $("#password").val();
+        let rePassword = $("#rePassword").val();
+        let anos_experiencia = $("#anos_experiencia").val();
+        let especialidad = $("#especialidad").val();
+
+        if (password === rePassword && password != "") {
+          try {
+            const res = await fetch("http://localhost:3000/actualizar", {  //email, nombre, password, anos_experiencia, especialidad
+              method: "post",
+              body: JSON.stringify({
+                email,
+                nombre,
+                password,
+                anos_experiencia,
+                especialidad,
+              }),
+              headers: { "Content-Type": "application/json" }
+            });
+            console.log(res);
+            const { data } = await res.json();
+            console.log(data);
+            data > 0 ? alert("Los datos han sido actualizados correctamente") : alert("Hubo un problema con los datos y no se actualizaron, vuelva a intentarlo")
+            window.location.href = `/login`;
+          } catch (e) {
+            alert("Algo salió mal ..." + e);
+          }
+        }
+
+      } else if ($(this).attr("value") == "boton2") {// cierre del if boton1
+        
+        let email_eliminar = $("#email").val();
+        if (email_eliminar) {
+          const eliminarParticipante = async (email_eliminar) => {
+            let res = await fetch(`http://localhost:3000/eliminar/${email_eliminar}`, {
+              method: "DELETE",
+            });
+            console.log('ya en el front');
+            const { data } = await res.json();
+            //console.log(data);
+            return data;
+          };
+
+          const respuesta = await eliminarParticipante(email_eliminar);
+          if (respuesta > 0) {
+            alert("Los datos han sido eliminados correctamente");
+            window.location.href = `/login`;
+          } else {
+            alert("No se han podido eliminar datos asociados, revise la direccion de correo electronico");
+          }
+        } else {
+          alert("Por favor ingrese un email para eliminar participante");
+        }
+
+      }
+
+    }); //cierre del click 
+
+  }); //ESTA LLAVE HABRIA QUE TIRARLA PARA ABAJO
+
+  //Funcion Eliminar
+
+  {{!-- $("#formulario2").submit(async (e) => {
     e.preventDefault();
     let email = $("#email").val();
-    let nombre = $("#name").val();
-    let password = $("#password").val();
-    let rePassword = $("#rePassword").val();
-    let anos_experiencia = $("#anos_experiencia").val();
-    let especialidad = $("#especialidad").val();
 
-if(password === rePassword && password != ""){
-    try {
-      const res = await fetch("http://localhost:3000/actualizar", {  //email, nombre, password, anos_experiencia, especialidad
-        method: "post",
-        body: JSON.stringify({
-          email,
-          nombre,
-          password,
-          anos_experiencia,
-          especialidad,
-        }),
-        headers: { "Content-Type": "application/json" }
-      });
-      console.log(res);
-      const { data } = await res.json();
-      console.log(data);
-      data >0 ? alert("Los datos han sido actualizados correctamente") : alert("Hubo un problema con los datos y no se actualizaron, vuelva a intentarlo")
-      location.reload();
-    } catch (e) {
-      alert("Algo salió mal ..." + e);
+    if (email) {
+      const eliminarParticipante = async (email) => {
+        let res = await fetch(`http://localhost:3000/eliminar/${email}`, {
+          method: "DELETE",
+        });
+        console.log('ya en el front');
+        const { data } = await res.json();
+        //console.log(data);
+        return data;
+      };
+
+      const respuesta = await eliminarParticipante(email_eliminar);
+      if (respuesta > 0) {
+        alert("Los datos han sido eliminados correctamente");
+        window.location.href = `/login`;
+      } else {
+        alert("No se han podido eliminar datos asociados, revise la direccion de correo electronico");
+      }
+    } else {
+      alert("Por favor ingrese un email para eliminar participante");
     }
-} else {
-  alert("Ingrese una contraseña, las contraseñas deben coincidir");
-      $("#password").val("");
-      $("#rePassword").val("");
-}    
-  });
-
-//Funcion Eliminar
-
-  $("#formulario2").submit(async (e) =>{
-    e.preventDefault();
-  const email_eliminar = $("#email_eliminar").val();
-
-if(email_eliminar){
-  const eliminarParticipante = async ( email_eliminar ) => {
-    let res = await fetch(`http://localhost:3000/eliminar/${email_eliminar}`, {
-      method: "DELETE",
-    });
-    console.log('ya en el front');
-    const { data } = await res.json();
-    //console.log(data);
-    return data;
-  };
-
-  const respuesta = await eliminarParticipante(email_eliminar);
-  if(respuesta > 0){                                           
-    alert("Los datos han sido eliminados correctamente");
-    window.location.href = `/login`;
-  } else {
-    alert("No se han podido eliminar datos asociados, revise la direccion de correo electronico");
-  }
-}else{
-  alert("Por favor ingrese un email para eliminar participante");
-}
-});
+  }); --}}
 </script>

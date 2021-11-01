@@ -75,8 +75,8 @@ app.get( "/login", function (req, res){
 
 app.post( "/autenticacion" , async (req, res) => {  //Autenticando usuario
     let { email, password } = req.body;
-    // console.log(email);
-    // console.log(password);
+     console.log(email);
+     console.log(password);
     try {
         let user = await getValidacion( email, password );
         if(user){
@@ -90,6 +90,8 @@ app.post( "/autenticacion" , async (req, res) => {  //Autenticando usuario
             );
             // console.log(token);
             res.json(token); 
+        } else {
+            res.json("NO EXISTE")
         }
     }catch(e){
         console.log(e);
