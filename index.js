@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const exphbs = require('express-handlebars');
 const expressFileUpload = require('express-fileupload');
 const jwt = require('jsonwebtoken');
-const { insertarParticipante, getParticipantes, getValidacion, actualizarParticipante, deleteParticipante } = require('./consultas');
+const { insertarParticipante, getParticipantes, getValidacion, actualizarParticipante, deleteParticipante, setParticipanteStatus } = require('./consultas');
 const secretKey = "secret";
 
 app.use(express.urlencoded({ extended: false }));
@@ -53,7 +53,7 @@ const verifyToken = (req, res, next) => {
 
 
 app.get( "/", async (req, res) =>{
-    res.render("index");
+    res.render("index", { layout: "index"});
 });
 
 app.get( "/participantes", async (req, res) =>{
@@ -75,8 +75,8 @@ app.get( "/login", function (req, res){
 
 app.post( "/autenticacion" , async (req, res) => {  //Autenticando usuario
     let { email, password } = req.body;
-     console.log(email);
-     console.log(password);
+    console.log(email);
+    console.log(password);
     try {
         let user = await getValidacion( email, password );
         if(user){
@@ -183,7 +183,15 @@ app.get( "/admin", verifyToken, async function (req, res){
     catch (e) {
         errorHandler(res, e);
     }
-})
+});
+
+app.put( "/changeStatus" , async (req, res) => {
+    const { id, auth } = req.body;
+    console.log(id);
+    console.log(auth);
+    const usuario = await setParticipanteStatus(id, auth);
+    res.status( 200 ).send( JSON .stringify(usuario));
+});
 
 
 app.get("*", (req, res) => {

@@ -24,6 +24,9 @@ Fecha: día 14-10-2021
 **Para ingresar a la vista de administrador se debe logear con la cuenta administrador en la vista login.
 ```
 ```
+**En ciertas ocasiones axios puede generar problemas, por lo que en caso de errores se recomienda reiniciar el servidor
+```
+```
 **Cuenta Admin:  email: admin@admin.cl  password: admin
 ```
 ```

@@ -87,7 +87,7 @@
 
 <script>
   
-   const getUsuarios = async () => {
+    const getUsuarios = async () => {
     const response = await fetch("http://localhost:3000/participantes");
     let  data  = await response.json();
     console.log(response);
@@ -105,7 +105,7 @@
             <td>${c.nombre}</td>
             <td>${c.anos_experiencia}</td>
             <td>${c.especialidad}</td>
-            <td class="text-warning font-weight-bold"> ${c.estado}</td>
+            <td class="text-warning font-weight-bold">${c.estado ? 'Aprobado' : 'En revision '} </td>
           </tr>`);
     });
   };

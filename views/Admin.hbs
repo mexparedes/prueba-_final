@@ -54,7 +54,7 @@
             <td>Danny Way</td>
             <td>8</td>
             <td>Ollie</td>
-            <td><input type="checkbox" /></td>
+            <td><input type="checkbox" checked /></td>
           </tr>
           {{#each participantes}}
           <tr>
@@ -67,7 +67,7 @@
             <td>{{this.nombre}}</td>
             <td>{{this.anos_experiencia}}</td>
             <td>{{this.especialidad}}</td>
-            <td><input type="checkbox" /></td>
+            <td><input type="checkbox" {{#if this.estado }} checked {{/if}} onclick="changeStatus( {{this.id}} , this)"/></td>
           </tr>
           {{/each}}
         </tbody>
@@ -86,3 +86,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
   </body>
 </html>
+
+<script>
+
+  const changeStatus = async (id, e) => {
+    let auth = e.checked
+    console.log(id);
+    console.log(auth);
+    await axios.put("http://localhost:3000/changeStatus", {
+      id,
+      auth
+    })
+    alert(auth ? "Usuario habilitado" : "Usuariodeshabilitado" );
+  }
+</script>

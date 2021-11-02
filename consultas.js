@@ -65,7 +65,24 @@ let actualizarParticipante = async ( participante ) => {
     } catch (e) {
         throw e;
     }
+};
+
+let setParticipanteStatus = async ( id, auth) => {
+    try {
+        let consulta = {
+            text: "UPDATE skaters SET estado = $2  WHERE id = $1 RETURNING *",
+            values: [id,auth]
+        }
+        //console.log(params);
+        const result = await pool.query(consulta);
+        console.log(result.rows[0].estado);
+        return result.rowCount;
+    } catch (e) {
+        throw e;
+    }
+
 }
+
 
 let deleteParticipante = async ( email ) => {
     let consulta = {
@@ -87,5 +104,6 @@ module.exports = {
     getParticipantes,
     getValidacion,
     actualizarParticipante,
+    setParticipanteStatus,
     deleteParticipante
 }
