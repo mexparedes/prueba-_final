@@ -105,7 +105,7 @@
             <td>${c.nombre}</td>
             <td>${c.anos_experiencia}</td>
             <td>${c.especialidad}</td>
-            <td class="text-warning font-weight-bold">${c.estado ? 'Aprobado' : 'En revision '} </td>
+            <td class="${c.estado ? 'text-success' : 'text-warning '} font-weight-bold">${c.estado ? 'Aprobado' : 'En revision '} </td>
           </tr>`);
     });
   };
